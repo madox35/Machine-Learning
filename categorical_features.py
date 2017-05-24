@@ -12,6 +12,7 @@ import plotly as ply
 import collections
 
 class Categorical:
+    
     def __init__(self,fileCSV=None):
         
         self.name = 'Categorical'
@@ -31,22 +32,50 @@ class Categorical:
     
     def get_categoricals(self):
         return self.categoricals
-      
+     
+    def get_categorical_features_table(self):
+        return self.categorical_features_table
+        
     def write_results(self):
         pd.DataFrame(self.categoricals).to_csv(path_or_buf=self.pathFileTableCategorical)
         print("Results writed in :" + self.pathFileTableCategorical)
         pd.DataFrame(self.categorical_features_table).to_csv(path_or_buf=self.pathFileResultsCategorical)
         print("Results writed in :" + self.pathFileResultsCategorical)
        
-    def get_categorical_features_table(self):
-        return self.categorical_features_table
-        
+
     def draw_graphics(self):
         
-        tableCategoricals = self.get_categoricals()
-#        for feature,value in tableCategoricals.items():                
-#            print(value)
-      
+        print("Drawing graphics in progress...")
+        csvFile = self.get_csv_file()
+        
+        for feature in csvFile.columns:
+            
+            if len(set(feature)) >= 10:
+                        
+                ply.offline.plot({
+                    "data": [
+                        ply.graph_objs.Histogram(
+                            x=csvFile[feature]
+                        )
+                    ],
+                    "layout": ply.graph_objs.Layout(
+                        title="Histogram of feature \"" + feature['nameFeature'] + "\" - cardinality >=10"
+                    )
+                }, filename="./Data/HTML/Continuous/%s.html" % feature['nameFeature'])
+            else:
+                ply.offline.plot({
+                    "data": [
+                        ply.graph_objs.Bar(
+                            x=csvFile[feature].value_counts().keys(),
+                            y=csvFile[feature].value_counts().values
+                        )
+                    ],
+                    "layout": ply.graph_objs.Layout(
+                        title="Bar plot for feature \"" + feature + "\" - cardinality <10"
+                    )
+                }, filename="./Data/HTML/Continuous/%s.html" % feature)
+        print("Drawing graphics done")
+        
     def launch_test(self):
         
         self.treatment();
@@ -58,14 +87,14 @@ class Categorical:
  
         print("Treatment "+ self.name +" in progress...")
         
-        categorical_columns = self.fileCSV.select_dtypes(exclude=[np.number])                     
+        categorical_columns = self.get_categoricals()                    
 
-        for categorie_name in categorical_columns:
+        for cat_name in categorical_columns:
             
-            dataFeature = self.fileCSV[categorie_name]
+            dataFeature = self.fileCSV[cat_name]
             
             feature =  collections.OrderedDict()
-            feature['nameFeature'] = categorie_name
+            feature['nameFeature'] = cat_name
             feature['countTotal'] = dataFeature.size
             feature['% Miss'] = dataFeature.isnull().sum()/ dataFeature.size * 100
             feature['cardTotal'] = np.unique(dataFeature).size
