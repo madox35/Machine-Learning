@@ -1,0 +1,6 @@
+# GLOBAL IGNORE
+
+Data/*
+!Data/DataSet/
+!Data/HTML/
+!Data/Results/
