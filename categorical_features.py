@@ -15,15 +15,15 @@ class Categorical:
     
     def __init__(self,fileCSV=None):
         
-        self.name = 'Categorical'
+        self.__name = 'Categorical'
         if fileCSV is None:
             self.pathBank = './Data/DataSet/bank/bank.csv'
             self.pathBankFull = './Data/DataSet/bank/bank-full.csv'
             self.fileCSV = pd.read_csv(filepath_or_buffer=self.pathBankFull, delimiter = ';', header=0, index_col=0)
         else:
             self.fileCSV = fileCSV
-        self.categorical_features_table = []
-        self.categoricals = self.fileCSV.select_dtypes(exclude=[np.number])
+        self.__categorical_features_table = []
+        self.__categoricals = self.fileCSV.select_dtypes(exclude=[np.number])
         self.pathFileTableCategorical = './Data/Results/group7-DQR-Categorical.csv'
         self.pathFileResultsCategorical = './Data/Results/group7-DQR-Categorical-Results.csv'
         
@@ -31,15 +31,15 @@ class Categorical:
         return self.fileCSV
     
     def get_categoricals(self):
-        return self.categoricals
+        return self.__categoricals
      
     def get_categorical_features_table(self):
-        return self.categorical_features_table
+        return self.__categorical_features_table
         
     def write_results(self):
-        pd.DataFrame(self.categoricals).to_csv(path_or_buf=self.pathFileTableCategorical)
+        pd.DataFrame(self.__categoricals).to_csv(path_or_buf=self.pathFileTableCategorical)
         print("Results writed in :" + self.pathFileTableCategorical)
-        pd.DataFrame(self.categorical_features_table).to_csv(path_or_buf=self.pathFileResultsCategorical)
+        pd.DataFrame(self.__categorical_features_table).to_csv(path_or_buf=self.pathFileResultsCategorical)
         print("Results writed in :" + self.pathFileResultsCategorical)
        
 
@@ -75,17 +75,10 @@ class Categorical:
                     )
                 }, filename="./Data/HTML/Continuous/%s.html" % feature)
         print("Drawing graphics done")
-        
-    def launch_test(self):
-        
-        self.treatment();
-        self.write_results()
-        self.draw_graphics()
-        
     
-    def treatment(self):
+    def save_data(self):
  
-        print("Treatment "+ self.name +" in progress...")
+        print("Saving data in progress...")
         
         categorical_columns = self.get_categoricals()                    
 
@@ -107,8 +100,13 @@ class Categorical:
             feature['Second Mode Freq'] = dataFeature.value_counts()[1]
             feature['Second Mode %'] = round(dataFeature.value_counts()[1] / dataFeature.size * 100,2)
             
-            self.categorical_features_table.append(feature)   
+            self.__categorical_features_table.append(feature)   
             
-        print("Treatment "+ self.name +" finished")
-        
-Categorical().launch_test()
+        print("Saving data finished")
+
+    def treatment(self):
+        self.save_data();
+        self.write_results()
+        self.draw_graphics()
+ 
+#Categorical().treatment()
