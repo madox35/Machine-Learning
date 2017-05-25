@@ -3,7 +3,7 @@
 """
 Created on Tue May 23 19:04:09 2017
 
-@author: hugo
+@author: Hugo Jové
 """
 
 import numpy as np
@@ -17,9 +17,12 @@ class Categorical:
         
         self.__name = 'Categorical'
         if fileCSV is None:
-            self.pathBank = './Data/DataSet/bank/bank.csv'
-            self.pathBankFull = './Data/DataSet/bank/bank-full.csv'
-            self.fileCSV = pd.read_csv(filepath_or_buffer=self.pathBankFull, delimiter = ';', header=0, index_col=0)
+            self.pathBank = 'Data/DataSet/bank/bank.csv'
+            self.pathBankFull = 'Data/DataSet/bank/bank-full.csv'
+            self.pathBankAdditional = 'Data/DataSet/bank-additional/bank-additional.csv'
+            self.pathBankAdditionalFull = 'Data/DataSet/bank-additional/bank-additional-full.csv'
+            
+            self.fileCSV = pd.read_csv(filepath_or_buffer= self.pathBankFull, delimiter = ';', header=0, index_col=0)
         else:
             self.fileCSV = fileCSV
         self.__categorical_features_table = []
@@ -59,9 +62,9 @@ class Categorical:
                         )
                     ],
                     "layout": ply.graph_objs.Layout(
-                        title="Histogram of feature \"" + feature['nameFeature'] + "\" - cardinality >=10"
+                        title="Histogram of feature \"" + feature + "\" - cardinality >=10"
                     )
-                }, filename="./Data/HTML/Continuous/%s.html" % feature['nameFeature'])
+                }, filename="./Data/HTML/Categorical/%s.html" % feature)
             else:
                 ply.offline.plot({
                     "data": [
@@ -73,7 +76,7 @@ class Categorical:
                     "layout": ply.graph_objs.Layout(
                         title="Bar plot for feature \"" + feature + "\" - cardinality <10"
                     )
-                }, filename="./Data/HTML/Continuous/%s.html" % feature)
+                }, filename="./Data/HTML/Categorical/%s.html" % feature)
         print("Drawing graphics done")
     
     def save_data(self):
@@ -84,11 +87,17 @@ class Categorical:
 
         for cat_name in categorical_columns:
             
+            # We get all the column of the category in the CSV file
             dataFeature = self.fileCSV[cat_name]
             
+            # We make a dictionnary to be granted to put string keys
             feature =  collections.OrderedDict()
+            
+            # Put in the table feature the name of the feature
             feature['nameFeature'] = cat_name
+            # Put in the table feature the total count of lines
             feature['countTotal'] = dataFeature.size
+                   
             feature['% Miss'] = dataFeature.isnull().sum()/ dataFeature.size * 100
             feature['cardTotal'] = np.unique(dataFeature).size
 
@@ -109,4 +118,4 @@ class Categorical:
         self.write_results()
         self.draw_graphics()
  
-#Categorical().treatment()
+Categorical().treatment()
