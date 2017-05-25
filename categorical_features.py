@@ -27,8 +27,8 @@ class Categorical:
             self.fileCSV = fileCSV
         self.__categorical_features_table = []
         self.__categoricals = self.fileCSV.select_dtypes(exclude=[np.number])
-        self.pathFileTableCategorical = './Data/Results/group7-DQR-Categorical.csv'
-        self.pathFileResultsCategorical = './Data/Results/group7-DQR-Categorical-Results.csv'
+        self.pathFileTableCategorical = './Data/Results/group7-Categorical.csv'
+        self.pathFileResultsCategorical = './Data/Results/group7-DQR-Categorical.csv'
         
     def get_csv_file(self):
         return self.fileCSV

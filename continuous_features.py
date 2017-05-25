@@ -36,9 +36,7 @@ class Continuous:
             
         if initContinuousData is True:
             self.init_continuous_data()
-            #self.continuous = self.fileCSV.select_dtypes(include=[np.number])
             self.write_continuous_file(self.continuous)
-            
             
             
     # Reading bank file from path
@@ -83,7 +81,7 @@ class Continuous:
         return self.continuousFeatures
         
     
-    def treatment(self):
+    def save_data(self):
         
         # 
         
@@ -148,7 +146,7 @@ class Continuous:
         #self.draw_graphics();
         
     def draw_graphics(self):
-        '''
+ 
         tableDataSet    = self.get_csv_file()
         print("Drawing graphics")
         
@@ -178,6 +176,10 @@ class Continuous:
                     )
                 }, filename="./Data/HTML/Continuous/%s.html" % feature)
 
-        print("End of drawing graphics")   
-        '''
-#Continuous().treatment()
+        print("End of drawing graphics")
+   
+    def treatment(self):
+        self.save_data()
+#        self.draw_graphics()
+
+Continuous().treatment()
