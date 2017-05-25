@@ -5,7 +5,6 @@ Created on Tue May 23 19:04:09 2017
 
 @author: morgan
 """
-
 import numpy as np
 import pandas as pd
 import plotly as ply
@@ -54,29 +53,46 @@ class Continuous:
             
             # Column's name
             feature = [column_name] 
-            feature.append(continuous_columns[column_name].size)
-            feature.append((continuous_columns[column_name].isnull().sum()/continuous_columns[column_name].size) * 100)
-            feature.append(continuous_columns[column_name].unique().size)
-            feature.append(np.min(continuous_columns[column_name]))
-            feature.append(np.percentile(continuous_columns[column_name],25))
-            feature.append(np.mean(continuous_columns[column_name]))
-            feature.append(np.percentile(continuous_columns[column_name],50))
-            feature.append(np.percentile(continuous_columns[column_name],75))
-            feature.append(np.max(continuous_columns[column_name]))
-            feature.append(np.std(continuous_columns[column_name]))
+            
+            # Get all data in csv file for each column
+            data_feature = continuous_columns[column_name]
+            
+            # Add number of values in column
+            feature.append(data_feature.size)
+            # Add missing values in rate
+            feature.append((data_feature.isnull().sum()/continuous_columns[column_name].size) * 100)
+            # Add number of unique data 
+            feature.append(data_feature.unique().size)
+            # Add the min of data
+            feature.append(np.min(data_feature))
+            # Add 1st quartil
+            feature.append(np.percentile(data_feature,25))
+            # Add mean of data
+            feature.append(np.mean(data_feature))
+            # Add median
+            feature.append(np.percentile(data_feature,50))
+            # Add 3rd quartil
+            feature.append(np.percentile(data_feature,75))
+            # Add the max of data
+            feature.append(np.max(data_feature))
+            # Add std
+            feature.append(np.std(data_feature))
                 
+            # Add this row in continuous file
             continuous_features_table.append(feature)
         
-#        print(continuous_features_table)
+#        
         
         print("End of treatment")
         #self.write_results_from_file(continuous_features_table,continuous_header)
+        
+        # Writing new CSV file
         pd.DataFrame(continuous_features_table,columns=continuous_header).to_csv(self.pathFileResult)
         self.continuous = continuous_features_table
         self.draw_graphics();
         
     def draw_graphics(self):
-        #tableContinuous = self.get_continuous()
+        
         tableDataSet    = self.get_csv_file()
         print("Drawing graphics")
         
