@@ -81,12 +81,16 @@ class Continuous:
         return self.continuousFeatures
         
     
+<<<<<<< HEAD
     def save_data(self):
         
         # 
         
         
         # Step 1, treatment to get all continuous features
+=======
+    def treatment(self):
+>>>>>>> 8717b5aa14c83feaf63c4979d5d2d27cacff70ea
         continuous_columns = self.continuous
         continuous_header = ["Features","Count","% Miss", "Card", "Min", "1st Qrt", "Mean","Median","3rd Qrt","Max", "std" ]
         continuous_features_table = []
@@ -138,15 +142,15 @@ class Continuous:
         
         # Writing new CSV file
         
-        
-        
-        
         pd.DataFrame(continuous_features_table,columns=continuous_header).to_csv(self.pathFileResult)
         self.continuous = continuous_features_table
         #self.draw_graphics();
         
     def draw_graphics(self):
+<<<<<<< HEAD
  
+=======
+>>>>>>> 8717b5aa14c83feaf63c4979d5d2d27cacff70ea
         tableDataSet    = self.get_csv_file()
         print("Drawing graphics")
         
@@ -176,6 +180,7 @@ class Continuous:
                     )
                 }, filename="./Data/HTML/Continuous/%s.html" % feature)
 
+<<<<<<< HEAD
         print("End of drawing graphics")
    
     def treatment(self):
@@ -183,3 +188,8 @@ class Continuous:
 #        self.draw_graphics()
 
 Continuous().treatment()
+=======
+        print("End of drawing graphics")   
+        
+#Continuous().treatment()
+>>>>>>> 8717b5aa14c83feaf63c4979d5d2d27cacff70ea
