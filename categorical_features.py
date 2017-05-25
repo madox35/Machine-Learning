@@ -50,10 +50,12 @@ class Categorical:
         
         print("Drawing graphics in progress...")
         csvFile = self.get_csv_file()
-        
+
         for feature in csvFile.columns:
             
-            if len(set(feature)) >= 10:
+            dataFeature = csvFile[feature]
+         
+            if np.unique(dataFeature).size >= 10:
                         
                 ply.offline.plot({
                     "data": [
