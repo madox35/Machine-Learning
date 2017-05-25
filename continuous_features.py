@@ -10,18 +10,61 @@ import pandas as pd
 import plotly as ply
 
 class Continuous:
-    def __init__(self,fileCSV=None):            
+    def __init__(self,initBank=True,initContinuousData=True):            
         print("Reading file")
-        if fileCSV is None:
-            self.pathBank   = './Data/DataSet/bank/bank-full.csv'
-            self.pathFile   = './Data/DataSet/Data.csv'
-            self.fileCSV    = pd.read_csv(filepath_or_buffer=self.pathBank,delimiter = ';', header=0, index_col=0)
-        else:
-            self.fileCSV = fileCSV
-            
-        self.continuous = self.fileCSV.select_dtypes(include=[np.number])
-        self.pathFileResult = './Data/Results/group7-DQR-Continuous.csv'
         
+        self.fileCSV = None
+        self.continuous = None
+        self.continuousFeatures = None
+        
+        self.pathBank       = './Data/DataSet/bank/bank.csv'
+        self.pathBankFull   = './Data/DataSet/bank/bank-full.csv'
+        
+        self.pathBankAdditional = './Data/DataSet/bank/bank-additional.csv'
+        self.pathBankAdditionalFull   = './Data/DataSet/bank/bank-additional-full.csv'
+        
+        self.pathContinuousFile = './Data/Results/group7-Continuous.csv'
+        self.pathFileResult = './Data/Results/group7-DQR-Continuous.csv'
+           
+        if initBank is True:
+            self.init_bank_file(self.pathBankFull)
+            #self.fileCSV = pd.read_csv(filepath_or_buffer=self.pathBankFull,delimiter = ';', header=0, index_col=0)
+            
+        if initContinuousData is True:
+            self.init_continuous_data()
+            #self.continuous = self.fileCSV.select_dtypes(include=[np.number])
+            self.write_continuous_file(self.continuous)
+            
+            
+            
+    # Reading bank file from path
+    def init_bank_file(self,path):
+        print("Reading bank file")
+        self.fileCSV = pd.read_csv(filepath_or_buffer=path,delimiter = ';', header=0, index_col=0)
+        
+    # Init continuous data
+    def init_continuous_data(self):
+        print("Init continuous data from bank file")
+        if self.fileCSV is not None:
+            self.continuous = self.fileCSV.select_dtypes(include=[np.number])
+        else:
+            print("Continuous not initiated")
+            
+    # Init features continuous 
+    def init_features_continuous_data(self,featuresData):
+        print("Init features continuous from continuous data")
+        self.continuousFeatures = featuresData                  
+        
+    def write_continuous_file(self,file):
+        print("Writing continuous data")
+        pd.DataFrame(file).to_csv(path_or_buf=self.pathContinuousFile)
+        
+    def write_results_from_file(self,data,headers):
+        self.init_features_continuous_data(data)
+        print("Writing results csv file")
+        pd.DataFrame(data,columns=headers).to_csv(self.pathFileResult)
+        
+    
     def get_csv_file(self):
         return self.fileCSV
     
@@ -30,22 +73,16 @@ class Continuous:
         return self.continuous
         
     
-    def write_results(self):
-        pd.DataFrame(self.continuous).to_csv(path_or_buf=self.pathFileResult)
-        
-    def write_results_from_file(self,file,headers):
-        print("Writing file")
-        pd.DataFrame(file,columns=[headers]).to_csv(self.pathFileResult)
-        
-    def add_feature(self,feature,value):
-        self.continuous[feature].append(value)
-       
-        
-    # Step 1, treatment to get all continuous features
     def treatment(self):
+        
+        # 
+        
+        
+        # Step 1, treatment to get all continuous features
         continuous_columns = self.continuous
         continuous_header = ["Features","Count","% Miss", "Card", "Min", "1st Qrt", "Mean","Median","3rd Qrt","Max", "std" ]
         continuous_features_table = []
+         #continuous_features_table = collections.OrderedDict()
         
         print("Beginning of treatment")
         
@@ -56,6 +93,13 @@ class Continuous:
             
             # Get all data in csv file for each column
             data_feature = continuous_columns[column_name]
+
+            # Get some informations to evaluate quality of some outliers            
+            mini = np.min(data_feature)
+            maxi = np.max(data_feature)
+            first_q = np.percentile(data_feature,25)
+            third_q = np.percentile(data_feature,75)
+            median = np.median(data_feature)
             
             # Add number of values in column
             feature.append(data_feature.size)
@@ -64,35 +108,37 @@ class Continuous:
             # Add number of unique data 
             feature.append(data_feature.unique().size)
             # Add the min of data
-            feature.append(np.min(data_feature))
+            feature.append(mini)
             # Add 1st quartil
-            feature.append(np.percentile(data_feature,25))
+            feature.append(first_q)
             # Add mean of data
             feature.append(np.mean(data_feature))
             # Add median
-            feature.append(np.percentile(data_feature,50))
+            feature.append(median)
             # Add 3rd quartil
-            feature.append(np.percentile(data_feature,75))
+            feature.append(third_q)
             # Add the max of data
-            feature.append(np.max(data_feature))
+            feature.append(maxi)
             # Add std
             feature.append(np.std(data_feature))
                 
             # Add this row in continuous file
             continuous_features_table.append(feature)
-        
-#        
-        
+
         print("End of treatment")
-        #self.write_results_from_file(continuous_features_table,continuous_header)
+        self.write_results_from_file(continuous_features_table,continuous_header)
         
         # Writing new CSV file
+        
+        
+        
+        
         pd.DataFrame(continuous_features_table,columns=continuous_header).to_csv(self.pathFileResult)
         self.continuous = continuous_features_table
-        self.draw_graphics();
+        #self.draw_graphics();
         
     def draw_graphics(self):
-        
+        '''
         tableDataSet    = self.get_csv_file()
         print("Drawing graphics")
         
@@ -123,5 +169,5 @@ class Continuous:
                 }, filename="./Data/HTML/Continuous/%s.html" % feature)
 
         print("End of drawing graphics")   
-        
-#Continuous().treatment()
+        '''
+Continuous().treatment()
