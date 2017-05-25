@@ -13,8 +13,11 @@ class Continuous:
     def __init__(self,initBank=True,initContinuousData=True):            
         print("Reading file")
         
+        # Bank file
         self.fileCSV = None
+        # Extracting continuous values from bank file
         self.continuous = None
+        # Continuous features
         self.continuousFeatures = None
         
         self.pathBank       = './Data/DataSet/bank/bank.csv'
@@ -24,6 +27,7 @@ class Continuous:
         self.pathBankAdditionalFull   = './Data/DataSet/bank/bank-additional-full.csv'
         
         self.pathContinuousFile = './Data/Results/group7-Continuous.csv'
+        # Path for features continuous values
         self.pathFileResult = './Data/Results/group7-DQR-Continuous.csv'
            
         if initBank is True:
@@ -59,11 +63,13 @@ class Continuous:
         print("Writing continuous data")
         pd.DataFrame(file).to_csv(path_or_buf=self.pathContinuousFile)
         
-    def write_results_from_file(self,data,headers):
+    def write_results_from_data(self,data,headers):
         self.init_features_continuous_data(data)
         print("Writing results csv file")
         pd.DataFrame(data,columns=headers).to_csv(self.pathFileResult)
         
+    def read_continuous_features(self):
+        return pd.read_csv(filepath_or_buffer=self.pathFileResult,delimiter = ';', header=0, index_col=0)
     
     def get_csv_file(self):
         return self.fileCSV
@@ -71,6 +77,10 @@ class Continuous:
     def get_continuous(self):
         print("continuous : ",self.continuous)
         return self.continuous
+    
+    def get_continuous_features(self):
+        print("continuous : ",self.continuousFeatures)
+        return self.continuousFeatures
         
     
     def treatment(self):
@@ -126,7 +136,7 @@ class Continuous:
             continuous_features_table.append(feature)
 
         print("End of treatment")
-        self.write_results_from_file(continuous_features_table,continuous_header)
+        self.write_results_from_data(continuous_features_table,continuous_header)
         
         # Writing new CSV file
         
@@ -170,4 +180,4 @@ class Continuous:
 
         print("End of drawing graphics")   
         '''
-Continuous().treatment()
+#Continuous().treatment()
