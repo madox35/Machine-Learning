@@ -21,7 +21,6 @@ class Categorical:
             self.pathBankFull = 'Data/DataSet/bank/bank-full.csv'
             self.pathBankAdditional = 'Data/DataSet/bank-additional/bank-additional.csv'
             self.pathBankAdditionalFull = 'Data/DataSet/bank-additional/bank-additional-full.csv'
-            
             self.fileCSV = pd.read_csv(filepath_or_buffer= self.pathBankFull, delimiter = ';', header=0, index_col=0)
         else:
             self.fileCSV = fileCSV
@@ -50,7 +49,7 @@ class Categorical:
         
         print("Drawing graphics in progress...")
         csvFile = self.get_csv_file()
-
+        
         for feature in csvFile.columns:
             
             dataFeature = csvFile[feature]

@@ -9,7 +9,10 @@ Created on Tue May 23 23:07:09 2017
 from pandas import DataFrame
 from sklearn import preprocessing
 from sklearn import tree
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn import cross_validation
+from sklearn import model_selection
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
@@ -40,7 +43,7 @@ training_target = bank[target]
 ######################
 
 # Training bank means that we only have a little part of data set
-training_bank = bank.sample(2000)
+training_bank = bank.sample(4000)
 
 ##################
 ## Testing bank ##
@@ -83,10 +86,10 @@ train_dfs = np.hstack((numeric_dfs.as_matrix(), vec_cat_dfs ))
 ##   Create and train a decision tree model using sklearn api
 ##---------------------------------------------------------------
 #create an instance of a decision tree model.
-decTreeModel = tree.DecisionTreeClassifier(criterion='entropy')
+decTreeModel = tree.DecisionTreeClassifier(criterion='entropy', max_depth=50)
 #fit the model using the numeric representations of the training data
 decTreeModel.fit(train_dfs, training_target)
-#data_dot = tree.export_graphviz(decTreeModel,out_file='./Dot/tree_dot.dot')
+data_dot = tree.export_graphviz(decTreeModel,out_file='./Dot/tree_dot.dot')
 #---------------------------------------------------------------
 #   Define 2 Queries, Make Predictions, Map Predictions to Levels
 #---------------------------------------------------------------
@@ -108,8 +111,6 @@ for column in bank:
 col_names =list(bank.columns)
 col_names.remove(target)
 qdf = pd.DataFrame.from_dict(q,orient="columns")
-#qdf = pd.DataFrame.from_dict(q,orient="index")
-#qdf.transpose()
 
 #extract the numeric features
 q_num = qdf[numeric_cfs].as_matrix() 
@@ -135,20 +136,55 @@ accuracy = accuracy_score(training_target, predictions, normalize=True)
 print("-------------------------------------------------")
 print("Accuracy and Confusion Matrix on Hold-out Testset")
 print("-------------------------------------------------")
-#define a decision tree model using entropy based information gain
-decTreeModel2 = tree.DecisionTreeClassifier(criterion='entropy')
+
 #Split the data: 90% training : 10% test set
-instances_train, instances_test, target_train, target_test = cross_validation.train_test_split(train_dfs, training_target, test_size=0.9, random_state=0)
+instances_train, instances_test, target_train, target_test = model_selection.train_test_split(train_dfs, training_target, test_size=0.2, random_state=0)
+##
+##define a decision tree model using entropy based information gain
+#clf = tree.DecisionTreeClassifier(criterion='entropy')
+#
+##fit the model using just the test set
+#clf.fit(instances_train, target_train)
+##Use the model to make predictions for the test set queries
+#predictions = clf.predict(instances_test)
+##Output the accuracy score of the model on the test set
+#print("Accuracy = " + str(accuracy_score(target_test, predictions)))
+##Output the confusion matrix on the test set
+#confusionMatrix = confusion_matrix(target_test, predictions)
+#print("Confisious " , confusionMatrix)
+#print("\n\n")
+
+print("KNN")
+#define a decision tree model using entropy based information gain
+clf = KNeighborsClassifier(n_neighbors=50)
+
 #fit the model using just the test set
-decTreeModel2.fit(instances_train, target_train)
+clf.fit(instances_train, target_train)
 #Use the model to make predictions for the test set queries
-predictions = decTreeModel2.predict(instances_test)
+predictions = clf.predict(instances_test)
 #Output the accuracy score of the model on the test set
-print("Accuracy = " + str(accuracy_score(target_test, predictions, normalize=True)))
+print("Accuracy = " + str(accuracy_score(target_test, predictions)))
 #Output the confusion matrix on the test set
 confusionMatrix = confusion_matrix(target_test, predictions)
 print("Confisious " , confusionMatrix)
 print("\n\n")
+
+#
+#print("Support vector classification")
+##define a decision tree model using entropy based information gain
+#clf = SVC()
+#
+##fit the model using just the test set
+#clf.fit(instances_train, target_train)
+##Use the model to make predictions for the test set queries
+#predictions = clf.predict(instances_test)
+##Output the accuracy score of the model on the test set
+#print("Accuracy = " + str(accuracy_score(target_test, predictions)))
+##Output the confusion matrix on the test set
+#confusionMatrix = confusion_matrix(target_test, predictions)
+#print("Confisious " , confusionMatrix)
+#print("\n\n")
+
 
 
 #Draw the confusion matrix
@@ -171,7 +207,7 @@ print("Cross-validation Results")
 print("------------------------")
 
 #run a 10 fold cross validation on this model using the full census data
-scores=cross_validation.cross_val_score(decTreeModel2, instances_train, target_train, cv=10)
+scores=cross_validation.cross_val_score(clf, instances_train, target_train, cv=10)
 #the cross validaton function returns an accuracy score for each fold
 print("Entropy based Model:")
 print("Score by fold: " + str(scores))
